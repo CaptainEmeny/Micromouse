@@ -37,6 +37,12 @@ void loop(){
     delay(100);
   }
 
+  /*
+  **************************************************************
+  *               SLIGHT MICROMOUSE ADJUSTMENTS                *
+  **************************************************************
+  */
+
   //WILL BE USED TO ADJUST THE MOUSE EVERY LOOP.
   if(mouse.wallDetected(LEFT_45)){                      //Adjust Left Side
     Serial.println("Adjusting Left");
@@ -55,9 +61,15 @@ void loop(){
     delay(100);
   }
 
+  /*
+  **************************************************************
+  *                    MAIN LEFT-HAND LOOP                     *
+  **************************************************************
+  */
   
   if(!mouse.wallDetected(LEFT) && turnCompleted){             //Look for Left Hole
-    Serial.println("Turning Left");
+
+    //Mark the turn as Started
     turnCompleted = false;
 
     delay(250);
@@ -65,27 +77,38 @@ void loop(){
     delay(600);
     mouse.moveForward();
 
-    delay(200); //Buffer a digitalRead from the mouse turning
-
-  } else if(!mouse.wallDetected(FRONT)) {        //No hole? Go back and try again.
-    Serial.println("Moving Forward");
-
-    turnCompleted = false;
-    mouse.moveForward();
-
-  } else if (!mouse.wallDetected(RIGHT) && turnCompleted){    //Look for Right Hole
-    Serial.println("Turning Right");
-    turnCompleted = false;
-
-    delay(250);
-    mouse.turnInPlaceLeft();
-    delay(600);
-    mouse.moveForward();
-
-    delay(200); //Buffer a digitalRead from the mouse turning
+    delay(200);
 
 
   } else if(mouse.wallDetected(FRONT)) {        //No hole? Go back and try again.
+
+    if (!mouse.wallDetected(LEFT)){
+  
+      //Mark the turn as Started
+      turnCompleted = false;
+
+      mouse.moveBackward();
+      delay(400);
+      mouse.turnInPlaceRight();
+      delay(600);
+      mouse.moveForward();
+
+      delay(200); //Buffer a digitalRead from the mouse turning
+
+    } else if (!mouse.wallDetected(RIGHT)){
+      
+      //Mark the turn as Started
+      turnCompleted = false;
+
+      mouse.moveBackward();
+      delay(400);
+      mouse.turnInPlaceLeft();
+      delay(600);
+      mouse.moveForward();
+
+      delay(200); //Buffer a digitalRead from the mouse turning
+
+    } else {
       Serial.println("Going back to try again");
 
       mouse.moveBackward();
@@ -93,6 +116,9 @@ void loop(){
       mouse.turnInPlaceLeft();
       delay(1200);
       mouse.moveForward();
+
+    }
   }
 
 }
+
